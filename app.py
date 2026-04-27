@@ -19,10 +19,29 @@ st.markdown("""
     background: linear-gradient(120deg,#0f2027,#203a43,#2c5364);
 }
 
-h1, h2, h3, h4, label {
+/* Headings white */
+h1, h2, h3, h4 {
     color: #ffffff !important;
 }
 
+/* Labels white */
+label, .stSelectbox label, .stNumberInput label {
+    color: #ffffff !important;
+}
+
+/* SELECT BOX */
+.stSelectbox div[data-baseweb="select"] {
+    background-color: #f0f2f6 !important;
+    color: black !important;
+}
+
+/* NUMBER INPUT BOX — FIXED VISIBILITY */
+.stNumberInput input {
+    background-color: #f0f2f6 !important;
+    color: black !important;
+}
+
+/* Buttons */
 .stButton>button {
     background: linear-gradient(90deg,#ff512f,#dd2476);
     color: white;
@@ -33,18 +52,12 @@ h1, h2, h3, h4, label {
     font-weight: bold;
 }
 
-.stNumberInput input {
-    background-color: #f0f2f6;
-}
-
-.stSelectbox div[data-baseweb="select"] {
-    background-color: #f0f2f6;
-}
-
+/* Container spacing */
 .block-container {
     padding-top: 2rem;
 }
 
+/* Glass card */
 .card {
     background-color: rgba(255,255,255,0.1);
     padding: 25px;
@@ -135,10 +148,8 @@ if predict_btn:
     input_df[f'Contract_{contract}'] = 1
     input_df[f'PaymentMethod_{payment}'] = 1
     
-    # 4. Scaling 
     input_scaled = scaler.transform(input_df)
 
-    # 5. Final Prediction
     prediction = model.predict(input_scaled)
     prob = model.predict_proba(input_scaled)[0][1]
 
