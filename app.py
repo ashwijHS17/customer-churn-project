@@ -4,18 +4,73 @@ import numpy as np
 import pickle
 from sklearn.preprocessing import StandardScaler
 
+# ---------- PAGE CONFIG ----------
+st.set_page_config(
+    page_title="Customer Churn Predictor",
+    page_icon="📊",
+    layout="wide"
+)
+
+# ---------- CUSTOM CSS ----------
+st.markdown("""
+<style>
+
+.main {
+    background: linear-gradient(120deg,#0f2027,#203a43,#2c5364);
+}
+
+h1, h2, h3, h4, label {
+    color: #ffffff !important;
+}
+
+.stButton>button {
+    background: linear-gradient(90deg,#ff512f,#dd2476);
+    color: white;
+    border-radius: 10px;
+    height: 3em;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.stNumberInput input {
+    background-color: #f0f2f6;
+}
+
+.stSelectbox div[data-baseweb="select"] {
+    background-color: #f0f2f6;
+}
+
+.block-container {
+    padding-top: 2rem;
+}
+
+.card {
+    background-color: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # 1. Load the model and the scaler
 model = pickle.load(open('gb_model.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
 
-
-st.title('Customer Churn Prediction App')
-st.write("Fill in the customer details to predict churn risk.")
+# ---------- TITLE ----------
+st.markdown("<h1 style='text-align:center;'>📊 Customer Churn Prediction Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align:center;'>Fill in customer details to predict churn risk</h4>", unsafe_allow_html=True)
+st.write("")
 
 # 2. Define User Inputs
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
+    st.subheader("👤 Personal Info")
     gender = st.selectbox('Gender', ['Female', 'Male'])
     senior = st.selectbox('Senior Citizen', ['No', 'Yes'])
     partner = st.selectbox('Has Partner?', ['No', 'Yes'])
@@ -23,6 +78,7 @@ with col1:
     tenure = st.number_input('Tenure (Months)', 0, 72, 1)
 
 with col2:
+    st.subheader("📡 Services")
     phone = st.selectbox('Phone Service', ['No', 'Yes'])
     multiple_lines = st.selectbox('Multiple Lines', ['No', 'Yes', 'No phone service'])
     internet = st.selectbox('Internet Service', ['DSL', 'Fiber optic', 'No'])
@@ -30,14 +86,20 @@ with col2:
     backup = st.selectbox('Online Backup', ['No', 'Yes', 'No internet service'])
 
 with col3:
+    st.subheader("💳 Billing Details")
     contract = st.selectbox('Contract', ['Month-to-month', 'One year', 'Two year'])
     paperless = st.selectbox('Paperless Billing', ['No', 'Yes'])
     payment = st.selectbox('Payment Method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'])
     monthly_charges = st.number_input('Monthly Charges', 0.0, 150.0, 50.0)
     total_charges = st.number_input('Total Charges', 0.0, 10000.0, 50.0)
 
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.write("")
+predict_btn = st.button("🚀 Predict Churn")
+
 # 3. Preprocessing Logic 
-if st.button('Predict Churn'):
+if predict_btn:
     
     cols = [
         'gender', 'SeniorCitizen', 'Partner', 'Dependents', 'tenure', 'PhoneService', 
@@ -80,7 +142,20 @@ if st.button('Predict Churn'):
     prediction = model.predict(input_scaled)
     prob = model.predict_proba(input_scaled)[0][1]
 
+    st.write("")
+    st.markdown("### 🔍 Prediction Result")
+
     if prediction[0] == 1:
-        st.error(f"Prediction: CUSTOMER WILL CHURN (Risk Score: {prob:.2f})")
+        st.markdown(f"""
+        <div style='background:#ff4b4b;padding:20px;border-radius:10px;text-align:center'>
+            <h2 style='color:white;'>⚠️ CUSTOMER WILL CHURN</h2>
+            <h3 style='color:white;'>Risk Score: {prob:.2f}</h3>
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        st.success(f"Prediction: CUSTOMER WILL STAY (Risk Score: {prob:.2f})")
+        st.markdown(f"""
+        <div style='background:#00c853;padding:20px;border-radius:10px;text-align:center'>
+            <h2 style='color:white;'>✅ CUSTOMER WILL STAY</h2>
+            <h3 style='color:white;'>Risk Score: {prob:.2f}</h3>
+        </div>
+        """, unsafe_allow_html=True)
